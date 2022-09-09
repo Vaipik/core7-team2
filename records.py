@@ -1,1 +1,1 @@
-record class for example
+record class for exampleasassaas
