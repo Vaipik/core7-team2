@@ -67,7 +67,7 @@ class Phone(Field):
             self._value = value
 
         else:
-            raise errors.WrongNumber(f"Looks like {value} is a wrong number. It must be 10 digits")
+            raise errors.WrongPhone(f"Looks like {value} is a wrong number. It must be 10 digits")
 
     def __str__(self):
         return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
