@@ -89,9 +89,9 @@ def main():
         parse_folder(path)
     else:
         print(f"{path.absolute()} does not exist")
-
-    delete_folders(path)
-
+    # Extra comment
+    """delete_folders(path)
+    """
 
 if __name__ == "__main__":
 
