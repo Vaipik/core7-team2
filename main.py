@@ -90,6 +90,7 @@ def main():
     else:
         print(f"{path.absolute()} does not exist")
 
+    # Extra comment
     delete_folders(path)
 
 
