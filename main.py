@@ -19,15 +19,11 @@ def create_folders(base_path: Path) -> None:
 
 
 def delete_folders(base_path: Path) -> None:
-    """
-    Is used to delete empty folders after sorting
 
-    :param base_path: path to be sorted
-    :return: None
-    """
     for folder in base_path.iterdir():
         if folder.name not in files_extensions.values():
             shutil.rmtree(folder)
+            print(folder.name)
 
 
 def get_extensions(extension: str) -> Union[tuple, str]:
@@ -57,8 +53,10 @@ def parse_folder(path: Path, base_path: Path = None) -> None:
         for elem in path.iterdir():
 
             if elem.is_file():
-                file_name = normalize(elem.stem) + elem.suffix  # Cyrillic -> latin
-                folder_name = files_extensions.get(get_extensions(elem.suffix[1:]), 'unknown')
+                file_name = normalize(elem.stem) + \
+                    elem.suffix  # Cyrillic -> latin
+                folder_name = files_extensions.get(
+                    get_extensions(elem.suffix[1:]), 'unknown')
                 folder_to = base_path.joinpath(folder_name)
 
                 if folder_name == 'archives':
@@ -74,10 +72,10 @@ def parse_folder(path: Path, base_path: Path = None) -> None:
 def main():
 
     if len(sys.argv) < 2:
-        
+
         print("No path was given")
         user_path = ""
-        
+
     else:
         user_path = sys.argv[1]
 
@@ -106,4 +104,3 @@ if __name__ == "__main__":
     }
 
     main()
- 
