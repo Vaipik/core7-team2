@@ -79,7 +79,7 @@ class Phone(Field):
 
 class Record:
 
-    def __init__(self, name, phones=[], birthday=None, emails=[]) -> None:
+    def __init__(self, name: Name, phones: Phone = [], birthday: Birthday = None, emails=[]):
         self.name = name
         self.phones = [phones] if phones is not None else[]
         self.birthday = birthday
@@ -96,7 +96,10 @@ class Record:
             return f"{old_phone} does not exist"
 
     def delete_phone(self, phone):
-        self.phones.remove(phone)
+        try:
+            self.phones.remove(phone)
+        except ValueError:
+            return f"{phone} does not exists"
 
     def add_email(self, email):
         self.emails.append(email)
@@ -109,7 +112,10 @@ class Record:
             return f"{old_email} does not exist"
 
     def delete_email(self, email):
-        self.emails.remove(email)
+        try:
+            self.emails.remove(email)
+        except ValueError:
+            return f"{email} does not exists"
 
 
 class AddressBook(UserDict):
