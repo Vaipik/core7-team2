@@ -243,15 +243,3 @@ class AddressBook(UserDict):
 
 class Notes:
     pass
-
-
-
-nickita = Record(Name('Nickita'), birthday=Birthday('12-09-1997'), phones=[Phone('0930341951')], emails=[Email('n.khylko@gmail.com'), Email('rafael4uk@gmail.com')])
-nastia = Record(Name('Nastia'), birthday=Birthday('04-10-1996'), phones=[Phone('0634702563')], emails=[Email('n.korinchyk@gmail.com'), Email('nasturuca@ukr.net')])
-
-AB = AddressBook()
-AB.add_contact(nickita)
-AB.add_contact(nastia)
-
-AB.find_record('ick')
-AB.find_record('063')
