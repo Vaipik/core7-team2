@@ -1,5 +1,6 @@
-import re
+from collections import UserDict
 from datetime import datetime
+import re
 
 import errors
 
@@ -23,11 +24,11 @@ class Birthday(Field):
 
     @Field.value.setter
     def value(self, value: str = None) -> None:  # dd-mm-yyyy -> %d-%m-%Y
-        if re.match(r"[a-zA-Z]{1}[\w.]{1,}@[a-zA-Z]{2,}.[a-zA-Z]{2,}", value):
-            try:
-                self._value = datetime.strptime(value, '%d-%m-%Y')  # raise ValueError if wrong
-            except ValueError:
-                raise errors.WrongBirthday('Data should be in format dd-mm-yyyy')
+
+        try:
+            self._value = datetime.strptime(value, '%d-%m-%Y')  # raise ValueError if wrong
+        except ValueError:
+            raise errors.WrongBirthday('Data should be in format dd-mm-yyyy')
 
     def __str__(self):
         return self.value.strftime('%d-%m-%Y')
@@ -38,7 +39,7 @@ class Email(Field):
     @Field.value.setter
     def value(self, value: str) -> None:
 
-        if '@' in value:
+        if re.match(r"[a-zA-Z][\w.]+@[a-zA-Z]{2,}.[a-zA-Z]{2,}.[a-zA-Z]{2,}$", value):
             self._value = value
 
         else:
@@ -71,3 +72,17 @@ class Phone(Field):
 
     def __str__(self):
         return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
+
+
+class Record:
+    pass
+
+
+class AddressBook(UserDict):
+    pass
+
+
+class Notes:
+    pass
+
+
