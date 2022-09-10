@@ -10,3 +10,9 @@ class WrongBirthday(Exception):
     pass
 
 
+class ContactExists(Exception):
+    pass
+
+
+class EmptySearchString(Exception):
+    pass

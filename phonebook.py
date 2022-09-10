@@ -1,7 +1,7 @@
 from collections import UserDict
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
-from typing import List, Optional
+from typing import Optional, List
 
 import errors
 
@@ -27,8 +27,7 @@ class Birthday(Field):
     def value(self, value: str = None) -> None:  # dd-mm-yyyy -> %d-%m-%Y
 
         try:
-            self._value = datetime.strptime(
-                value, '%d-%m-%Y')  # raise ValueError if wrong
+            self._value = datetime.strptime(value, '%d-%m-%Y').date()  # raise ValueError if wrong
         except ValueError:
             raise errors.WrongBirthday('Data should be in format dd-mm-yyyy')
 
@@ -40,8 +39,8 @@ class Email(Field):
 
     @Field.value.setter
     def value(self, value: str) -> None:
-
-        if re.match(r"[a-zA-Z][\w.]+@[a-zA-Z]{2,}.[a-zA-Z]{2,}.[a-zA-Z]{2,}$", value):
+        __pattern = r"^[a-zA-Z][\w.]{1,}@([a-zA-Z]{2,}[.][a-zA-Z]{2,}|[a-zA-Z]{2,}[.][a-zA-Z]{2,}[.][a-zA-Z]{2,})$"
+        if re.match(__pattern, value):
             self._value = value
 
         else:
@@ -70,12 +69,10 @@ class Phone(Field):
             self._value = value
 
         else:
-            raise errors.WrongPhone(
-                f"Looks like {value} is a wrong number. It must be 10 digits")
+            raise errors.WrongPhone(f"Looks like {value} is a wrong number. It must be 10 digits")
 
     def __str__(self):
-        # +38(012)34-567-89
-        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"
+        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
 
 
 class Record:
@@ -91,7 +88,7 @@ class Record:
         self.birthday = birthday
         self.emails = emails
 
-    def add_phone(self, phone: Phone) -> None:
+    def add_phone(self, phone: Phone) -> str:
         """
         Adding new phone to current record
         :param phone: instance of Phone
@@ -131,7 +128,7 @@ class Record:
             else:
                 return f"{phone_to_delete} does not exist"
 
-    def add_email(self, email: Email) -> None:
+    def add_email(self, email: Email) -> str:
         """
         Adds new email to current record
         :param email: instance of Email
@@ -173,7 +170,93 @@ class Record:
 
 
 class AddressBook(UserDict):
-    pass
+
+    __fields = ('name', 'birthday', 'emails', 'phones')
+
+    def add_contact(self, record: Record) -> None:
+        """
+        Create new contact in phonebook
+
+        :param record: Record instance with contact information
+        :raise ContactExists: if contact is phonebook
+        :return: None
+        """
+        contact = record.name.value
+        if contact in self.data:
+            raise errors.ContactExists(f"{contact} is already in your contacts")
+
+        self.data[contact] = record
+
+    # @decorator -> KeyError
+    def delete_contact(self, contact: str) -> str:
+        """
+        Delete contact from phonebook
+
+        :param contact: contact name to be deleted
+        :return: Message if contact was deleted
+        """
+        if contact not in self.data:
+            raise KeyError(f"{contact} is not in your phonebook")
+
+        self.data.pop(contact)
+        return f"{contact} has been deleted"
+
+    def find_record(self, search: str) -> str | dict[list]:
+        """
+        Show records with similar or exact data
+        :param search: information to search
+        :return: None
+        """
+        if not search:
+            raise errors.EmptySearchString
+
+        _matched_information = {}
+        for record in self.data.values():  # type: Record
+            __information = []
+            for field in AddressBook.__fields:
+
+                record_field = getattr(record, field)
+                if record_field is None:
+                    continue
+
+                if isinstance(record_field, list):  # type: List[Phone], List[Email]
+                    for data in record_field:
+                        if search in data.value:
+                            __information.append(data.value)
+
+                elif isinstance(record_field, Birthday):  # type: Birthday
+                    if search in record_field.value.strftime('%d-%m-%Y'):
+                        __information.append(record_field.value.strftime('%d-%m-%Y'))
+                elif isinstance(record_field, Name):
+                    if search in record_field.value:  # type: Name
+                        __information.append(record_field.value)
+
+            if __information:
+                _matched_information[record.name.value] = __information.copy()
+                __information.clear()
+
+        return _matched_information
+
+    def show_near_birthdays(self, days: int = 30) -> list:
+        """
+          Show users and their birthdays in given days
+
+        :param days: days interval
+        :return: None
+        """
+        current_date = datetime.now().date()
+        birthdays = []
+
+        for record in self.data.values():  # type: Record
+
+            birthday = record.birthday.value.replace(year=current_date.year)
+            if current_date <= birthday <= current_date + timedelta(days):
+                birthdays.append(
+                    f"{record.name.value} has birthday  {record.birthday.value.strftime('%d %B')}"
+                    f" in {(birthday - current_date).days} days"
+                )
+
+        return birthdays
 
 
 class Notes:
