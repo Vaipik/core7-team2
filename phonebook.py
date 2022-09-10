@@ -26,7 +26,8 @@ class Birthday(Field):
     def value(self, value: str = None) -> None:  # dd-mm-yyyy -> %d-%m-%Y
 
         try:
-            self._value = datetime.strptime(value, '%d-%m-%Y')  # raise ValueError if wrong
+            self._value = datetime.strptime(
+                value, '%d-%m-%Y')  # raise ValueError if wrong
         except ValueError:
             raise errors.WrongBirthday('Data should be in format dd-mm-yyyy')
 
@@ -68,14 +69,53 @@ class Phone(Field):
             self._value = value
 
         else:
-            raise errors.WrongPhone(f"Looks like {value} is a wrong number. It must be 10 digits")
+            raise errors.WrongPhone(
+                f"Looks like {value} is a wrong number. It must be 10 digits")
 
     def __str__(self):
-        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
+        # +38(012)34-567-89
+        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"
 
 
 class Record:
-    pass
+
+    def __init__(self, name: Name, phones: Phone = [], birthday: Birthday = None, emails=[]):
+        self.name = name
+        self.phones = [phones] if phones is not None else[]
+        self.birthday = birthday
+        self.emails = [emails] if emails is not None else[]
+
+    def add_phone(self, phone):
+        self.phones.append(phone)
+
+    def change_phone(self, old_phone, new_phone):
+        try:
+            self.phones.remove(old_phone)
+            self.phones.append(new_phone)
+        except ValueError:
+            return f"{old_phone} does not exist"
+
+    def delete_phone(self, phone):
+        try:
+            self.phones.remove(phone)
+        except ValueError:
+            return f"{phone} does not exists"
+
+    def add_email(self, email):
+        self.emails.append(email)
+
+    def change_email(self, old_email, new_email):
+        try:
+            self.emails.remove(old_email)
+            self.emails.append(new_email)
+        except ValueError:
+            return f"{old_email} does not exist"
+
+    def delete_email(self, email):
+        try:
+            self.emails.remove(email)
+        except ValueError:
+            return f"{email} does not exists"
 
 
 class AddressBook(UserDict):
