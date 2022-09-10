@@ -84,5 +84,3 @@ class AddressBook(UserDict):
 
 class Notes:
     pass
-
-
