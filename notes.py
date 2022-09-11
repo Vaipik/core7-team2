@@ -30,7 +30,7 @@ class NotesCommands:
     def add_note(self, tag: str, note = "* empty note *"):
         create = datetime.now()
         if tag not in notesbook.data:   
-            all_note_data = {"create": [create.strftime("%d.%m.%Y %H:%M")], "note": note}
+            all_note_data = {"create": create.strftime("%d.%m.%Y %H:%M"), "note": note}
             notesbook.data[tag] = all_note_data
         else:
             return '**  a note with this name exists, if you want to change it enter the command: edit note  **'
@@ -48,23 +48,29 @@ class NotesCommands:
         return f'** note {tag} edit successfully **'
     
     def show_some_note(self, tag: str):
-        result = f"""name note (tag): {tag}
-        date create note: {notesbook.data[tag]["create"]}
-        note text: {notesbook.data[tag]["note"]}"""
+        result = f'''date create note: {notesbook.data[tag]["create"]}\nnote text: {notesbook.data[tag]["note"]}\n'''
         print(result)
         return result
 
     def show_all_notes(self):
-        result = ""
+        result = "\n*** ALL YOUR NOTES ***\n\n"
         for k, v in notesbook.data.items():
-            result += f'''name note (tag): {k}\ndate create note: {v["create"]}\nnote text: {v["note"]}\n\n'''
+            result += f'''tag: {k}\ncreate: {v["create"]}\nnote: {v["note"]}\n\n'''
         print(result)
         return result
 
     def find_note(self, request: str):
-        pass
-
-
+        find = ""
+        for k, v in notesbook.data.items():
+            if request in k:
+                find += f'''tag: {k}\ncreate: {v["create"]}\nnote: {v["note"]}\n\n'''
+        if find == "":
+            print('*** No notes were found matching your request ***')
+        else:
+            result = "\n*** FIND NEXT NOTES ***\n\n" + find
+        print(result)
+        return result
+        
 # *** next need deleted ***
 # НАСТУПНИЙ КОД ТІЛЬКИ ДЛЯ ПЕРЕВІРКИ ОКРЕМОГО ФУНКЦІОНУВАННЯ РОБОТИ З НОТАТКАМИ (ВИДАЛИТИ ПРИ ІНТЕГРУВАННІ)
 
@@ -72,15 +78,24 @@ class NotesCommands:
 notesbook = NotesBook()
 notescommands = NotesCommands()
 notesbook.read_file()
-
-print('\n*** start a mini CLI-bot (only for test notes) ***')
+welcome = """\n*** start a mini CLI-bot (only for test notes) ***
+ ДОСТУПНІ КОМАНДИ:
+new note - команда додавання нового нотатка (після введення команди спочатку запросить назву нотатка, потім сам текст нотатка)
+delete note - команда видалення нотатка
+edit note - команта редагування нотатка
+all notes - відобразити всі створені нотатки
+note - команда відображення певного нотатка (після введення команди спочатку запросить назву нотатка, потім виведе текст нотатка)
+find note - пошук нотатка по назві
+stop - вихід з циклу Бота
+"""
+print(welcome)
 
 while True:
     userinput = input(": ")
     if userinput.lstrip().lower() == "stop":
         print('*** mini CLI-bot end of work (only for test notes) ***\n')
         break
-    elif userinput.lstrip().lower() == "add note":
+    elif userinput.lstrip().lower() == "new note":
         input_tag = input(": enter note name: ")
         input_note_text = input(": enter note text: ")
         notescommands.add_note(input_tag, input_note_text)
@@ -107,11 +122,20 @@ while True:
             print(f': note with name: {input_tag} does not find')
         else:
             notescommands.show_some_note(input_tag)
-        
+    elif userinput.lstrip().lower() == "find note":
+        request = input(": enter a query to search: ")
+        notescommands.find_note(request)       
 
 
 # python3 notes.py
 
+# залишилось зробити теги окремо ллістом з сортуванням і відображенням по тегам
+
+# зберігати нотатки з текстовою інформацією;
+# проводити пошук за нотатками;
+# редагувати та видаляти нотатки;
+# додавати в нотатки "теги", ключові слова, що описують тему та предмет запису;
+# здійснювати пошук та сортування нотаток за ключовими словами (тегами);
 
 # add_note(tag: str, note: str)
 # delete_note(tag: str)
