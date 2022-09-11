@@ -27,7 +27,8 @@ class Birthday(Field):
     def value(self, value: str = None) -> None:  # dd-mm-yyyy -> %d-%m-%Y
 
         try:
-            self._value = datetime.strptime(value, '%d-%m-%Y').date()  # raise ValueError if wrong
+            self._value = datetime.strptime(
+                value, '%d-%m-%Y').date()  # raise ValueError if wrong
         except ValueError:
             raise errors.WrongBirthday('Data should be in format dd-mm-yyyy')
 
@@ -69,16 +70,18 @@ class Phone(Field):
             self._value = value
 
         else:
-            raise errors.WrongPhone(f"Looks like {value} is a wrong number. It must be 10 digits")
+            raise errors.WrongPhone(
+                f"Looks like {value} is a wrong number. It must be 10 digits")
 
     def __str__(self):
-        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
+        # +38(012)34-567-89
+        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"
 
 
 class Record:
     """
     Contact record
-    Attributes: name, birthday, emails,  phones, birthday, emails
+    Attributes: name, phones, birthday, emails
     """
 
     def __init__(self, name: Name, phones: Optional[List[Phone]] = None,
@@ -100,12 +103,12 @@ class Record:
             self.phones.append(phone)
         return "Phone number added"
 
-    def change_phone(self, old_phone: str, new_phone: Phone) -> str | None:
+    def change_phone(self, old_phone: str, new_phone: Phone) -> str:
         """
         Changing user phone
         :param old_phone: phone to be changed
         :param new_phone: instance of Phone
-        :return: string if no phone to be changed was found else None
+        :return: string if no phone to be changed was found
         """
         for phone in self.phones:
             if phone.value == old_phone:
@@ -115,11 +118,11 @@ class Record:
             else:
                 return f"{old_phone} does not exist"
 
-    def delete_phone(self, phone_to_delete: str) -> str | None:
+    def delete_phone(self, phone_to_delete: str) -> str:
         """
         Deleting phone
         :param phone_to_delete: phone to be deleted
-        :return: string if no phone was found else None
+        :return: string if no phone was found
         """
         for phone in self.phones:
             if phone.value == phone_to_delete:
@@ -140,12 +143,12 @@ class Record:
             self.emails.append(email)
         return "Email added"
 
-    def change_email(self, old_email: str, new_email: Email) -> str | None:
+    def change_email(self, old_email: str, new_email: Email) -> str:
         """
         Changing user email
         :param old_email: email to be changed
         :param new_email: instance of Email
-        :return: string if no email to be changed was found else None
+        :return: string if no email to be changed was found
         """
         for email in self.emails:
             if email.value == old_email:
@@ -155,11 +158,11 @@ class Record:
         else:
             return f"{old_email} does not exist"
 
-    def delete_email(self, email_to_delete: str) -> str | None:
+    def delete_email(self, email_to_delete: str) -> str:
         """
         Deleting email
         :param email_to_delete: email to be deleted
-        :return: string if no email was found else None
+        :return: string if no email was found
         """
         for email in self.emails:
             if email.value == email_to_delete:
@@ -167,6 +170,46 @@ class Record:
                 return "Email deleted"
         else:
             return f"{email_to_delete} does not exist"
+
+    def add_birthday(self, birthday: Birthday) -> str:
+        """
+        Adding new birthday to current record
+        :param birthday: instance of Birthday
+        :return: None
+        """
+        if self.birthday is None:
+            self.birthday = [birthday]
+        else:
+            return "Birthday exists"
+        return "Birthday added"
+
+    def change_birthday(self, old_birthday: str, new_birthday: Birthday) -> str:
+        """
+        Changing user birthday
+        :param old_birthday: birthday to be changed
+        :param new_birthday: instance of Birthday
+        :return: string if no birthday to be changed was found
+        """
+        if self.birthday == old_birthday:
+            self.birthday = new_birthday
+            return "Birthday canged"
+        else:
+            return "Birthday does not exist"
+
+    def delete_birthday(self, birthday_to_delete: Birthday) -> str:
+        """
+        Deleting birthday
+        :param birthday_to_delete: birthday to be deleted
+        :return: string if no birthday was found
+        """
+        if self.birthday == birthday_to_delete:
+            self.birthday = None
+            return "Birthday deleted"
+        else:
+            return "Birthday does not exist"
+
+    def __len__(self):
+        pass
 
 
 class AddressBook(UserDict):
@@ -183,7 +226,8 @@ class AddressBook(UserDict):
         """
         contact = record.name.value
         if contact in self.data:
-            raise errors.ContactExists(f"{contact} is already in your contacts")
+            raise errors.ContactExists(
+                f"{contact} is already in your contacts")
 
         self.data[contact] = record
 
@@ -219,14 +263,16 @@ class AddressBook(UserDict):
                 if record_field is None:
                     continue
 
-                if isinstance(record_field, list):  # type: List[Phone], List[Email]
+                # type: List[Phone], List[Email]
+                if isinstance(record_field, list):
                     for data in record_field:
                         if search in data.value:
                             __information.append(data.value)
 
                 elif isinstance(record_field, Birthday):  # type: Birthday
                     if search in record_field.value.strftime('%d-%m-%Y'):
-                        __information.append(record_field.value.strftime('%d-%m-%Y'))
+                        __information.append(
+                            record_field.value.strftime('%d-%m-%Y'))
                 elif isinstance(record_field, Name):
                     if search in record_field.value:  # type: Name
                         __information.append(record_field.value)
