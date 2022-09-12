@@ -20,4 +20,3 @@ class LongName(Exception):
 
 class EmptySearchString(Exception):
     pass
-

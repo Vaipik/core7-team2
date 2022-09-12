@@ -95,7 +95,6 @@ class Record:
     Contact record
     Attributes: name, phones, birthday, emails
     """
-
     def __init__(self, name: Name, phones: Optional[List[Phone]] = None,
                  birthday: Optional[Birthday] = None, emails: Optional[List[Email]] = None) -> None:
 
@@ -364,3 +363,6 @@ class AddressBook(UserDict):
                 current_page += 1
                 on_page = 0
 
+
+class Notes:
+    pass
