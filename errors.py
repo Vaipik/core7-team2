@@ -14,5 +14,9 @@ class ContactExists(Exception):
     pass
 
 
+class LongName(Exception):
+    pass
+
+
 class EmptySearchString(Exception):
     pass
