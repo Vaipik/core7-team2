@@ -23,7 +23,7 @@ class NotesBook(UserDict):
 
 class NotesCommands(NotesBook):
 
-    def add_note(self, name: str, tags: str, note: str, notesbook: NotesBook) -> str:
+    def add_note(self, name: str, tags: str, note: str, notesbook: NotesBook) -> None:
         notesbook.read_file()
         create = datetime.now()
         if name not in notesbook.data:   
@@ -110,6 +110,7 @@ welcome = """ДОСТУПНІ КОМАНДИ:
 new note - команда додавання нового нотатка (після введення команди спочатку запросить назву нотатка, потім сам текст нотатка)
 delete note - команда видалення нотатка
 edit note - команта редагування нотатка
+edit tags - команта редагування тегів нотатка
 all notes - відобразити всі створені нотатки
 note - команда відображення певного нотатка (після введення команди спочатку запросить назву нотатка, потім виведе текст нотатка)
 find note - пошук нотатка по назві
