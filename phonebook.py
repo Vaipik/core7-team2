@@ -1,6 +1,8 @@
 from collections import UserDict
 from datetime import datetime, timedelta
 import re
+from pathlib import Path
+import pickle
 from typing import Optional, List, Generator
 
 import errors
@@ -234,6 +236,53 @@ class AddressBook(UserDict):
     __fields = ('name', 'phones', 'emails', 'birthday')
     __records_per_page = 2
 
+    def __init__(self, book_name: str = 'AddressBook'):
+        super().__init__(self)
+        self.__book_name = book_name
+        self.__path = self.__path_file()
+        self.data = self.__restore()
+
+    def __path_file(self) -> Path:
+        """
+        Path where self data is stored
+        :return: Path
+        """
+        path = Path('data')
+        path.mkdir(exist_ok=True)
+        path = path.joinpath(f'{self.__book_name}.phone')
+        return path
+
+    def __restore(self):
+        """
+        Is used to restore saved book if it exists
+        :return: saved or empty book
+        """
+        if self.__path.exists() and self.__path.is_file():
+            with open(self.__path, 'rb') as file:
+                try:
+                    book = pickle.load(file)
+                    if not isinstance(book, AddressBook):  # If data not AddressBook object
+                        print(f'Wrong data in {self.__path}\nBook has not been restored')
+                        return {}
+                except EOFError:  # If file is empty
+
+                    return {}
+        else:  # If file does not exist
+            return {}
+
+        print(f'{self.__book_name} data has been restored')
+        return book.data
+
+    def __save(self) -> None:
+        """
+        Saving data in given path
+        :return: None
+        """
+        with open(self.__path, 'wb') as file:
+            pickle.dump(self, file)
+
+        print(f"Contact has been saved to {self.__path}")
+
     def add_contact(self, record: Record) -> None:
         """
         Create new contact in phonebook
@@ -247,6 +296,7 @@ class AddressBook(UserDict):
             raise errors.ContactExists(f"{contact} is already in your contacts")
 
         self.data[contact] = record
+        self.__save()
 
     # @decorator -> KeyError
     def delete_contact(self, contact: str) -> str:
@@ -261,7 +311,20 @@ class AddressBook(UserDict):
             raise KeyError(f"{contact} is not in your phonebook")
 
         self.data.pop(contact)
+        self.__save()
+
         return f"{contact} has been deleted"
+
+    def changed_contact_data(self, record: Record) -> str:
+        """
+        Is used change contact data
+        :param record: record to be changed
+        :return:
+        """
+        self.data[record.name.value] = record
+        self.__save()
+
+        return f"Data has been changed"
 
     def find_record(self, search: str) -> str | dict[list]:
         """
@@ -334,8 +397,9 @@ class AddressBook(UserDict):
         if records_per_page:
             self.__records_per_page = records_per_page
 
-        total_pages = int(len(self.data) / self.__records_per_page)
-
+        total_pages = len(self.data) / self.__records_per_page if len(self.data) % self.__records_per_page == 0 else \
+            (len(self.data) // self.__records_per_page) + 1
+        total_pages = int(total_pages)
         current_page = 1
         page_info = []
         on_page = 0
@@ -363,6 +427,40 @@ class AddressBook(UserDict):
                 current_page += 1
                 on_page = 0
 
+        else:
+            page_info.append([f"{current_page} page of {total_pages} pages"])
+            yield page_info
+
 
 class Notes:
     pass
+
+
+"""if __name__ == '__main__':
+
+    record1 = Record(name=Name('name'), birthday=Birthday('12-03-1997'))
+    record2 = Record(name=Name('one more name'), phones=[Phone('0123456789')])
+    record3 = Record(name=Name('one name'), emails=[Email('rafael4uk@ukr.net')])
+
+    AB = AddressBook('userbook')
+
+    for page in AB.show_contacts(2):
+        for elem in page:
+            print(elem[0], end=' ')
+            print(*elem[1:], sep=', ')
+
+    AB = AddressBook('try')
+    AB.add_contact(record1)
+    AB.add_contact(record2)
+    AB.add_contact(record3)
+    for page in AB.show_contacts(1):
+        for elem in page:
+            print(elem[0], end=' ')
+            print(*elem[1:], sep=', ')
+
+    AB = AddressBook('userbook')
+    for page in AB.show_contacts(2):
+        for elem in page:
+            print(elem[0], end=' ')
+            print(*elem[1:], sep=', ')"""
+
