@@ -23,12 +23,24 @@ def add_birthday(*args) -> None:  # Username birthday
 
 @error_handler
 def add_email(*args):
-    print('adding email func')
+    name, email, *tail = args
+
+    record: Record = AB.get(name)
+    record.add_email(
+        Email(email)
+    )
+    AB.changed_contact_data(record)
 
 
 @error_handler
 def add_phone(*args):
-    print('adding phone func')
+    name, phone, *tail = args
+
+    record: Record = AB.get(name)
+    record.add_phone(
+        Phone(phone)
+    )
+    AB.changed_contact_data(record)
 
 
 @error_handler
@@ -126,8 +138,30 @@ def show_contacts(*args):
 
 @error_handler
 def show_help(*args):
-    pass
-
+    name = args
+    print("""'add birthday' - add to your contact birthday date, format - dd-mm-yyyy,
+    'add email'- add to your contact email address, format - example@gmail.com,
+    'add phone'- add to your contact phone, format - 10 numbers,
+    'add note'- add note to the notebook,  
+    'edit birthday' - change already created birthday date, format - dd-mm-yyyy,
+    'edit email'- change already created email address, format - example@gmail.com,
+    'edit phone'- change already created phone number, format - 10 numbers,
+    'edit note'- change already created note,  
+    'delete birthday'- delete already created birthday date,
+    'delete email'- delete already created email address,
+    'delete phone'- delete already created phone number,
+    'delete note'- delete already created note,  
+    'find tag'- find tag from notebook,  
+    'find note'- find note from notebook,  
+    'find phonebook'- find phonebook,
+    'sort tag'- sorted your tag,  
+    'show help'- show information for all commands,
+    'show contacts'- show all contacts,
+    'show note'- show notes,  
+    'new contact'- add new contact,
+    'change phonebook'- change information in phonebook,
+    'change notebook'- change information in notebook,
+    'sort folder' - sorted all your file except phonebook and notebook""")
 
 @error_handler
 def show_notes(*args):
@@ -201,7 +235,7 @@ NBCmd = NotesCommands()  # Vova
 
 while True:
 
-    print(">>> Hello! I am your CLI helper. Please enter show help to see what can i do!")
+    print(">>> Hello! I am your CLI helper. Please enter 'show help' to see what can i do!")
     command, data_type, *query = input_parser(input())
     if command == 'stop':
         break
