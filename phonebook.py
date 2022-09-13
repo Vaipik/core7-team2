@@ -436,7 +436,7 @@ class Notes:
     pass
 
 
-"""if __name__ == '__main__':
+if __name__ == '__main__':
 
     record1 = Record(name=Name('name'), birthday=Birthday('12-03-1997'))
     record2 = Record(name=Name('one more name'), phones=[Phone('0123456789')])
@@ -462,5 +462,5 @@ class Notes:
     for page in AB.show_contacts(2):
         for elem in page:
             print(elem[0], end=' ')
-            print(*elem[1:], sep=', ')"""
+            print(*elem[1:], sep=', ')
 
