@@ -1,8 +1,11 @@
+from functools import wraps
+
 from errors import *
 
 
 def error_handler(function):
 
+    @wraps(function)
     def wrapper(*args, **kwargs):
 
         try:
