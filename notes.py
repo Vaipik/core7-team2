@@ -24,6 +24,7 @@ class NotesBook(UserDict):
 class NotesCommands(NotesBook):
 
     def add_note(self, name: str, tags: str, note: str, notesbook: NotesBook) -> None:
+        """the function of adding a new note"""
         notesbook.read_file()
         create = datetime.now()
         if name not in notesbook.data:   
@@ -37,6 +38,7 @@ class NotesCommands(NotesBook):
             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m exists, if you want to change it enter the command: edit note\033[37m')
 
     def delete_note(self, name: str, notesbook: NotesBook) -> None:
+        """function to delete a note"""
         notesbook.read_file()
         if name not in notesbook.data:
             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
@@ -45,6 +47,7 @@ class NotesCommands(NotesBook):
             notesbook.save_in_file()
 
     def edit_note(self, name: str, note: str, notesbook: NotesBook) -> None:
+        """note editing function"""
         notesbook.read_file()
         if name not in notesbook.data:
             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
@@ -52,11 +55,13 @@ class NotesCommands(NotesBook):
             notesbook.data[name]["note"] = note
             notesbook.save_in_file()
 
-    def text_note(self, name: str,  notesbook: NotesBook) -> str:
+    def get_note(self, name: str,  notesbook: NotesBook) -> str:
+        """a service function for outputting the content of a note, for example, for editing the text of a note so that the old content is visible"""
         notesbook.read_file()
         return notesbook.data[name]["note"]
 
     def edit_tags(self, name: str, tags: str, notesbook: NotesBook) -> None:
+        """function of editing tags in a note"""
         notesbook.read_file()
         if name not in notesbook.data:
             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
@@ -67,26 +72,32 @@ class NotesCommands(NotesBook):
             notesbook.data[name]["tags"] = list_tags
             notesbook.save_in_file()
 
-    def text_tags(self, name: str,  notesbook: NotesBook) -> str:
+    def get_tags(self, name: str,  notesbook: NotesBook) -> str:
+        """a service function for outputting the tags of a note, for example, for editing the tags of a note so that the old content is visible"""
         notesbook.read_file()
         return notesbook.data[name]["tags"]    
 
-    def show_some_note(self, name: str,  notesbook: NotesBook) -> None:
+    def show_some_note(self, name: str,  notesbook: NotesBook) -> str:
+        """function to display some note"""
         notesbook.read_file()
         if name not in notesbook.data:
             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
         else:
             result = f'''\n  name:  {name}\n  tags:  {", ".join(notesbook.data[name]["tags"])}\ncreate:  {notesbook.data[name]["create"]}\n  note:  {notesbook.data[name]["note"]}\n'''
             print(result)
+            return result
 
-    def show_all_notes(self, notesbook: NotesBook) -> None:
+    def show_all_notes(self, notesbook: NotesBook) -> str:
+        """function to display all notes"""
         notesbook.read_file()
         result = "\033[32m\n*** ALL YOUR NOTES ***\033[0m\n"
         for k, v in notesbook.data.items():
             result += f'''\n  name:  {k}\n  tags:  {", ".join(v["tags"])}\ncreate:  {v["create"]}\n  note:  {v["note"]}\n'''
         print(result)
+        return result
 
-    def find_note(self, request: str, notesbook: NotesBook) -> None:
+    def find_note(self, request: str, notesbook: NotesBook) -> str:
+        """function to search for a note by title or content"""
         notesbook.read_file()
         find = ""
         for k, v in notesbook.data.items():
@@ -97,8 +108,10 @@ class NotesCommands(NotesBook):
         else:
             result = "\033[32m\n*** FIND NEXT NOTES ***\n\033[0m" + find
             print(result)
+            return result
 
-    def find_tag(self, tag: str, notesbook: NotesBook) -> None:
+    def find_tag(self, tag: str, notesbook: NotesBook) -> str:
+        """function to search for a note by tag"""
         notesbook.read_file()
         find = ""
         all_tags = []
@@ -109,19 +122,27 @@ class NotesCommands(NotesBook):
         available = ', '.join(set(all_tags))
         if tag == "available":
             print("\nIn all your Notes are available next tags :\n" + available + "\n")
-        elif tag == "sorting":
-            for n in set(sorted(all_tags)):
-                find += f"\033[4mNotes with tag {n}:\033[0m\n"
-                for k, v in notesbook.data.items():
-                    if (n.lower() in v["tags"]) or (n in v["tags"]):
-                        find += f'''  name:  {k}\n  tags:  {", ".join(v["tags"])}\ncreate:  {v["create"]}\n  note:  {v["note"]}\n'''
-            print(find) 
         elif find == "":
             print(f'\033[33m*** No notes found with tag \033[43m {tag} \033[0m\033[33m ***\033[0m')
         else:
             result = f"\033[32m\n*** Find next notes with tag \033[42m {tag} \033[0m\033[32m ***\n\033[0m" + find
             print(result)
+            return result
     
+    def sort_tag(self, notesbook: NotesBook) -> str:
+        """function to display all notes sorted by tags alphabetically"""
+        notesbook.read_file()
+        result = ""
+        all_tags = []
+        for k, v in notesbook.data.items():
+            all_tags.extend(v["tags"])
+        for n in sorted(set(all_tags)):
+            result += f"\033[4mNotes with tag {n}:\033[0m\n"
+            for k, v in notesbook.data.items():
+                if (n.lower() in v["tags"]) or (n in v["tags"]):
+                    result += f'''  name:  {k}\n  tags:  {", ".join(v["tags"])}\ncreate:  {v["create"]}\n  note:  {v["note"]}\n'''
+        print(result)
+        return result
        
 
 # # НАСТУПНИЙ КОД ТІЛЬКИ ДЛЯ ПЕРЕВІРКИ ОКРЕМОГО ФУНКЦІОНУВАННЯ РОБОТИ З НОТАТКАМИ 
@@ -164,7 +185,7 @@ class NotesCommands(NotesBook):
 #     elif userinput.lstrip()[0:9].lower() == "edit note":
 #         name = input(": name of the note you want to edit: ")
 #         try:
-#             print(f": old  text note: {notescommands.text_note(name, NotesBook())}")
+#             print(f": old  text note: {notescommands.get_note(name, NotesBook())}")
 #             new_note = input(": edit text note: ")
 #             notescommands.edit_note(name, new_note, NotesBook())
 #         except KeyError:
@@ -173,7 +194,7 @@ class NotesCommands(NotesBook):
 #     elif userinput.lstrip()[0:8].lower() == "edit tag":
 #         name = input(": name of the note where you want to edit tags: ")
 #         try:
-#             print(f": old  tags: {', '.join(notescommands.text_tags(name, NotesBook()))}")
+#             print(f": old  tags: {', '.join(notescommands.get_tags(name, NotesBook()))}")
 #             new_tags = input(": edit tags: ")
 #             notescommands.edit_tags(name, new_tags, NotesBook())
 #         except KeyError:
@@ -196,6 +217,6 @@ class NotesCommands(NotesBook):
 #         notescommands.find_tag(tag, NotesBook())  
 
 #     elif userinput.lstrip().lower() == "sort tag":
-#         notescommands.find_tag("sorting", NotesBook()) 
+#         notescommands.sort_tag(NotesBook()) 
 
 # # python3 notes.py
