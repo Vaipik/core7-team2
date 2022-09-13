@@ -98,78 +98,104 @@ class NotesCommands(NotesBook):
             result = "\033[32m\n*** FIND NEXT NOTES ***\n\033[0m" + find
             print(result)
 
-    def sort(self, select: str, notesbook: NotesBook) -> None:
-        pass
+    def find_tag(self, tag: str, notesbook: NotesBook) -> None:
+        notesbook.read_file()
+        find = ""
+        all_tags = []
+        for k, v in notesbook.data.items():
+            all_tags.extend(v["tags"])
+            if (tag.lower() in v["tags"]) or (tag in v["tags"]):
+                find += f'''\n  name:  {k}\n  tags:  {", ".join(v["tags"])}\ncreate:  {v["create"]}\n  note:  {v["note"]}\n'''
+        available = ', '.join(set(all_tags))
+        if tag == "available":
+            print("\nIn all your Notes are available next tags :\n" + available + "\n")
+        elif tag == "sorting":
+            for n in set(sorted(all_tags)):
+                find += f"\033[4mNotes with tag {n}:\033[0m\n"
+                for k, v in notesbook.data.items():
+                    if (n.lower() in v["tags"]) or (n in v["tags"]):
+                        find += f'''  name:  {k}\n  tags:  {", ".join(v["tags"])}\ncreate:  {v["create"]}\n  note:  {v["note"]}\n'''
+            print(find) 
+        elif find == "":
+            print(f'\033[33m*** No notes found with tag \033[43m {tag} \033[0m\033[33m ***\033[0m')
+        else:
+            result = f"\033[32m\n*** Find next notes with tag \033[42m {tag} \033[0m\033[32m ***\n\033[0m" + find
+            print(result)
+    
+       
 
+# # НАСТУПНИЙ КОД ТІЛЬКИ ДЛЯ ПЕРЕВІРКИ ОКРЕМОГО ФУНКЦІОНУВАННЯ РОБОТИ З НОТАТКАМИ 
 
-# НАСТУПНИЙ КОД ТІЛЬКИ ДЛЯ ПЕРЕВІРКИ ОКРЕМОГО ФУНКЦІОНУВАННЯ РОБОТИ З НОТАТКАМИ (ВИДАЛИТИ ПРИ ІНТЕГРУВАННІ)
+# notescommands = NotesCommands()
 
-notescommands = NotesCommands()
+# welcome = """ДОСТУПНІ КОМАНДИ:
+# new note - команда додавання нового нотатка (після введення команди спочатку запросить назву нотатка, потім сам текст нотатка)
+# delete note - команда видалення нотатка
+# edit note - команта редагування нотатка
+# edit tags - команта редагування тегів нотатка
+# all notes - відобразити всі створені нотатки
+# note - команда відображення певного нотатка (після введення команди спочатку запросить назву нотатка, потім виведе текст нотатка)
+# find note - пошук нотатка по назві або тексту
+# find tag - пошук нотатка по тегу
+# sort tag - команда що виводить нотатки згідно сортованих по алфавіту тегам
+# stop - вихід з циклу Бота
+# """
+# print('\033[32m\n*** start a mini CLI-bot (only for test notes) ***\n\033[0m')
+# print(welcome)
+# while True:
 
-welcome = """ДОСТУПНІ КОМАНДИ:
-new note - команда додавання нового нотатка (після введення команди спочатку запросить назву нотатка, потім сам текст нотатка)
-delete note - команда видалення нотатка
-edit note - команта редагування нотатка
-edit tags - команта редагування тегів нотатка
-all notes - відобразити всі створені нотатки
-note - команда відображення певного нотатка (після введення команди спочатку запросить назву нотатка, потім виведе текст нотатка)
-find note - пошук нотатка по назві
-stop - вихід з циклу Бота
-"""
-print('\033[32m\n*** start a mini CLI-bot (only for test notes) ***\n\033[0m')
-print(welcome)
-while True:
+#     userinput = input(": ")
+#     if userinput.lstrip().lower() == "stop":
+#         print('\033[32m*** mini CLI-bot end of work (only for test notes) ***\n\033[0m')
+#         break
 
-    userinput = input(": ")
-    if userinput.lstrip().lower() == "stop":
-        print('\033[32m*** mini CLI-bot end of work (only for test notes) ***\n\033[0m')
-        break
+#     elif userinput.lstrip().lower() == "new note":
+#         name = input(": enter note name: ")
+#         tags = input(": enter tags for note: ")
+#         text = input(": enter note text: ")
+#         notescommands.add_note(name, tags, text, NotesBook())
 
-    elif userinput.lstrip().lower() == "new note":
-        name = input(": enter note name: ")
-        tags = input(": enter tags for note: ")
-        text = input(": enter note text: ")
-        notescommands.add_note(name, tags, text, NotesBook())
+#     elif userinput.lstrip()[0:11].lower() == "delete note":
+#         name = input(": name of the note you want to delete: ")
+#         confirm = input(": do you really want to delete y/n: ")
+#         if confirm.lower() == "y":
+#             notescommands.delete_note(name, NotesBook())
 
-    elif userinput.lstrip()[0:11].lower() == "delete note":
-        name = input(": name of the note you want to delete: ")
-        confirm = input(": do you really want to delete y/n: ")
-        if confirm.lower() == "y":
-            notescommands.delete_note(name, NotesBook())
+#     elif userinput.lstrip()[0:9].lower() == "edit note":
+#         name = input(": name of the note you want to edit: ")
+#         try:
+#             print(f": old  text note: {notescommands.text_note(name, NotesBook())}")
+#             new_note = input(": edit text note: ")
+#             notescommands.edit_note(name, new_note, NotesBook())
+#         except KeyError:
+#             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
 
-    elif userinput.lstrip()[0:9].lower() == "edit note":
-        name = input(": name of the note you want to edit: ")
-        try:
-            print(f": old  text note: {notescommands.text_note(name, NotesBook())}")
-            new_note = input(": edit text note: ")
-            notescommands.edit_note(name, new_note, NotesBook())
-        except KeyError:
-            print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+#     elif userinput.lstrip()[0:8].lower() == "edit tag":
+#         name = input(": name of the note where you want to edit tags: ")
+#         try:
+#             print(f": old  tags: {', '.join(notescommands.text_tags(name, NotesBook()))}")
+#             new_tags = input(": edit tags: ")
+#             notescommands.edit_tags(name, new_tags, NotesBook())
+#         except KeyError:
+#             print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
 
-    elif userinput.lstrip()[0:8].lower() == "edit tag":
-        name = input(": name of the note where you want to edit tags: ")
-        try:
-            print(f": old  tags: {', '.join(notescommands.text_tags(name, NotesBook()))}")
-            new_tags = input(": edit tags: ")
-            notescommands.edit_tags(name, new_tags, NotesBook())
-        except KeyError:
-            print(f'\033[33mnote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+#     elif (userinput.lstrip().lower() == "all notes") or (userinput.lstrip().lower() == "all note"):
+#         notescommands.show_all_notes(NotesBook())
 
-    elif (userinput.lstrip().lower() == "all notes") or (userinput.lstrip().lower() == "all note"):
-        notescommands.show_all_notes(NotesBook())
+#     elif userinput.lstrip().lower() == "note":
+#         name = input(": enter the name of the note you want to view: ")
+#         notescommands.show_some_note(name, NotesBook())
 
-    elif userinput.lstrip().lower() == "note":
-        name = input(": enter the name of the note you want to view: ")
-        notescommands.show_some_note(name, NotesBook())
+#     elif userinput.lstrip().lower() == "find note":
+#         request = input(": enter a query to search: ")
+#         notescommands.find_note(request, NotesBook())       
+    
+#     elif userinput.lstrip().lower() == "find tag":
+#         notescommands.find_tag("available", NotesBook())
+#         tag = input(": enter a tag: ")
+#         notescommands.find_tag(tag, NotesBook())  
 
-    elif userinput.lstrip().lower() == "find note":
-        request = input(": enter a query to search: ")
-        notescommands.find_note(request, NotesBook())       
+#     elif userinput.lstrip().lower() == "sort tag":
+#         notescommands.find_tag("sorting", NotesBook()) 
 
-
-# python3 notes.py
-
-# init open read file when start
-# пошук та сортування нотаток за ключовими словами (тегами);
-# сортування по дате
-# описати всі def
+# # python3 notes.py
