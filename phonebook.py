@@ -247,7 +247,8 @@ class AddressBook(UserDict):
         Path where self data is stored
         :return: Path
         """
-        path = Path('data')
+        BASE_DIR = Path(__file__).parent
+        path = BASE_DIR.joinpath('data')
         path.mkdir(exist_ok=True)
         path = path.joinpath(f'{self.__book_name}.phone')
         return path

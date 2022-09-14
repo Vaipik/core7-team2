@@ -458,10 +458,12 @@ NBCmd = NotesCommands()  # Vova
 
 
 def handler():
-
+    print('>>> Greetings! I am your CLI helper. Enter show help to see what can i do.'
+          '\n>>>> Or try yourself :)')
     while True:
-        command, data_type, *query = input_parser(input())
+        command, data_type, *query = input_parser(input('<<< '))
         if command == 'break':
+            print('\nGoodbye! I will be waiting for you comeback :)')
             break
 
         action = OPERATIONS.get(command + ' ' + data_type, wrong_command)

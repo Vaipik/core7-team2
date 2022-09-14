@@ -1,11 +1,16 @@
 from collections import UserDict
 from datetime import datetime
+from pathlib import Path
 import pickle
 
 
 class NotesBook(UserDict):
+
+    BASE_DIR = Path(__file__).parent
+    DATA_DIR = BASE_DIR.joinpath('data')
     def __init__(self):
-        self.filename = "notesbook.txt"
+
+        self.filename = NotesBook.DATA_DIR.joinpath('notesbook.note')
         self.data = {}
 
     def read_file(self) -> None:
