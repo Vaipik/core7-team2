@@ -36,7 +36,7 @@ def add_note(*args):                                        # area of responsibi
     name = input("Enter note name: ")
     tags = input("Enter tags for note: ")
     text = input("Enter note text: ")
-    print(NBCmd.add_note(name, tags, text, NotesBook()))
+    print(NBCmd.add_note(name, tags, text, NBCmd))
 
 
 @error_handler
@@ -57,23 +57,25 @@ def edit_phone(*args):
 @error_handler
 def edit_note(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note you want to edit: ")
-    try:
-        print(f"Old  text note: {NBCmd.get_note(name, NotesBook())}")
-        new_note = input("Edit text note: ")
-        print(NBCmd.edit_note(name, new_note, NotesBook()))
-    except KeyError:
+    nt_data = NBCmd.get_note(name, NB)
+    if name not in nt_data:
         print(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+    else:
+        print(f"Old  text note: {NBCmd.get_note(name, NB}")
+        new_note = input("Edit text note: ")
+        print(NBCmd.edit_note(name, new_note, NB))
 
 
 @error_handler
 def edit_tag(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note where you want to edit tags: ")
-    try:
-        print(f"Old  tags: {', '.join(NBCmd.get_tags(name, NotesBook()))}")
-        new_tags = input("Edit tags: ")
-        print(NBCmd.edit_tags(name, new_tags, NotesBook()))
-    except KeyError:
+    nb_data = NBCmd.get_tags(name, NB)
+    if name not in nb_data:
         print(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+    else:
+        print(f"Old  tags: {', '.join(NBCmd.get_tags(name, NB))}")
+        new_tags = input("Edit tags: ")
+        print(NBCmd.edit_tags(name, new_tags, NB))
 
 
 @error_handler
@@ -96,7 +98,7 @@ def delete_note(*args):                                        # area of respons
     name = input("Enter the name of the note you want to delete: ")
     confirm = input("Do you really want to delete y/n: ")
     if confirm.lower() == "y":
-        print(NBCmd.delete_note(name, NotesBook()))
+        print(NBCmd.delete_note(name, NB))
 
 
 @error_handler
@@ -130,7 +132,7 @@ def change_notebook(*args):
 @error_handler
 def find_note(*args):                                        # area of responsibility Volodymyr
     request = input("Enter a query to search: ")
-    print(NBCmd.find_note(request, NotesBook()))
+    print(NBCmd.find_note(request, NB))
 
 
 @error_handler
@@ -140,9 +142,9 @@ def find_phonebook(*args):
 
 @error_handler
 def find_tag(*args):                                         # area of responsibility Volodymyr
-    print(NBCmd.find_tag("available", NotesBook()))
+    print(NBCmd.find_tag("available", NB))
     tag = input("Enter a tag: ")
-    print(NBCmd.find_tag(tag, NotesBook())) 
+    print(NBCmd.find_tag(tag, NB)) 
 
 
 @error_handler
@@ -157,13 +159,13 @@ def show_help(*args):
 
 @error_handler
 def show_notes(*args):                                        # area of responsibility Volodymyr
-    print(NBCmd.show_all_notes(NotesBook()))
+    print(NBCmd.show_all_notes(NB))
 
 
 @error_handler
 def show_note(*args):                                         # area of responsibility Volodymyr
     name = input("Enter the name of the note you want to view: ")
-    print(NBCmd.show_some_note(name, NotesBook()))
+    print(NBCmd.show_some_note(name, NB))
 
 @error_handler
 def sort_folder(*args) -> None:
@@ -179,7 +181,7 @@ def sort_folder(*args) -> None:
 
 @error_handler
 def sort_tag(*args):                                        # area of responsibility Volodymyr
-    print(NBCmd.sort_tag(NotesBook()))
+    print(NBCmd.sort_tag(NB))
 
 
 @error_handler
