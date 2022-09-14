@@ -13,12 +13,12 @@ def add_birthday(*args) -> None:  # Username birthday
     :return: None
     """
     name, birthday, *tail = args
-
-    record: Record = AB.get(name)
-    record.change_birthday(
+    record: Record = AB[name]
+    result = record.add_birthday(
         Birthday(birthday)
     )
-    AB.changed_contact_data(record)
+    if 'exists' not in result:
+        AB.changed_contact_data(record)
 
 
 @error_handler
@@ -34,6 +34,18 @@ def add_phone(*args):
 @error_handler
 def add_note(*args):
     print('adding note func')
+
+
+@error_handler
+def birthdays_in(*args) -> None:
+    """
+    Show birthday persons in given days\n
+    :param args: days
+    :return: None
+    """
+    days = int(args[0]) if args else None
+    birthdays = AB.show_near_birthdays(days) if days else AB.show_near_birthdays()
+    print(*birthdays)
 
 
 @error_handler
@@ -79,24 +91,31 @@ def delete_note(*args):
 @error_handler
 def new_contact(*args) -> None:  # Username .....
     """
-
+    Adding new contact to your phonebook
     :param args: query
     :return: None
     """
     name = Name(args[0])
-    phones = [Phone(data) for data in args[1:] if data.isdigit()]  # Simple check for email
-    emails = [Email(data) for data in args[1:] if '@' in data]  # Simple check for email
+    record = Record(name)
+    for arg in args[1:]:
 
-    for data in args[1:]:
-        birthday = Birthday(data) if '@' not in data and not data.isdigit() else None
+        if arg.isdigit():
+            record.add_phone(Phone(arg))
 
-    record = Record(name=name, birthday=birthday, emails=emails, phones=phones)
+        elif '@' in arg:
+            record.add_email(Email(arg))
+
+        else:
+            record.add_birthday(Birthday(arg))
+
     AB.add_contact(record)
 
 
 @error_handler
 def change_phonebook(*args):
-    print('changing phonebook func')
+
+    global AB
+    AB = AddressBook(args[0])
 
 
 @error_handler
@@ -110,8 +129,21 @@ def find_note(*args):
 
 
 @error_handler
-def find_phonebook(*args):
-    pass
+def find_phonebook(*args) -> None:
+
+    information = [AB.find_record(arg) for arg in args]
+    for answer in information:
+
+        for username, fields in answer.items():
+
+            if len(fields) == 1 and username == fields[0]:  # username is a key
+                print(f"Looks like you are looking for {username} contact")
+                # print(AB.show_contact(username))
+            else:
+                print(f"Looks like you are looking for {username} data:")
+                for field in fields:
+                    print(field[0], end=': ')
+                    print(*field[1:], sep=', ')
 
 
 @error_handler
@@ -120,8 +152,33 @@ def find_tag(*args):
 
 
 @error_handler
-def show_contacts(*args):
-    pass
+def show_contact(*args) -> None:
+    """
+    Is used to show one exact contact data
+    :param args:
+    :return:
+    """
+    name = args[0]
+    contact_info = AB.show_record_data(name)
+
+    for field in contact_info:
+        print(*field)
+
+
+@error_handler
+def show_contacts(*args) -> None:
+    """
+    Show all phonebook records separated on pages
+    :param args: records per page
+    :return:
+    """
+    records_per_page = int(args[0]) if args else None
+
+    pages = AB.show_contacts(records_per_page) if records_per_page else AB.show_contacts()
+
+    for page in pages:
+        for data in page:
+            print(*data)
 
 
 @error_handler
@@ -142,8 +199,8 @@ def sort_folder(*args) -> None:
     :return:
     """
     if len(args) != 1:
-        raise ValueError
-    sorter(args)
+        raise ValueError('Wrong path buddy')
+    print(sorter(args[0]))
 
 
 @error_handler
@@ -155,15 +212,25 @@ def sort_tag(*args):
 def wrong_command(*args):
 
     input_command = f"{args[0]} {args[1]}"
-
+    print(input_command)
     for d in OPERATIONS.keys():
         if input_command in d:
+            print(d)
             return d
-
     return wrong_command(input_command[:-1])
 
 
 def input_parser(user_input: str) -> list:
+    """
+
+    :param user_input:
+    :return:
+    """
+    stop_word = ('stop', 'exit', 'goodbye')
+    for word in stop_word:
+        if word in user_input.lower():
+            return ['break', []]
+
     user_input = user_input.split()
     return ['wrong', 'command'] if len(user_input) < 2 else user_input
 
@@ -186,6 +253,8 @@ OPERATIONS = {
     'find phonebook': find_phonebook,
     'sort tag': sort_tag,  # Vova
     'show help': show_help,
+    'birthdays in': birthdays_in,
+    'show contact': show_contact,
     'show contacts': show_contacts,
     'show notes': show_notes,  # Vova
     'new contact': new_contact,
@@ -198,18 +267,23 @@ OPERATIONS = {
 AB = AddressBook('tests')
 NB = NotesBook()  # Vova
 NBCmd = NotesCommands()  # Vova
+print(">>> Hello! I am your CLI helper. Please enter show help to see what can i do!")
 
 while True:
 
-    print(">>> Hello! I am your CLI helper. Please enter show help to see what can i do!")
     command, data_type, *query = input_parser(input())
-    if command == 'stop':
+    print(command, data_type)
+    if command == 'break':
         break
     action = OPERATIONS.get(command + ' ' + data_type, wrong_command)
-    action(query)
+    if action.__name__ == 'wrong_command':
+        action(command, data_type)
+    else:
+        if not query:
+            query = []
+        print(action(*query))
 
 # def handler
-
 
     # if __name__ == '__main__':
     #     # handler()
