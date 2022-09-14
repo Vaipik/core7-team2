@@ -265,13 +265,11 @@ class AddressBook(UserDict):
                         print(f'Wrong data in {self.__path}\nBook has not been restored')
                         return {}
                 except EOFError:  # If file is empty
-
                     return {}
+            print(f'{self.__book_name} data has been restored')
+            return book.data
         else:  # If file does not exist
             return {}
-
-        print(f'{self.__book_name} data has been restored')
-        return book.data
 
     def __save(self) -> None:
         """
@@ -347,17 +345,17 @@ class AddressBook(UserDict):
                     continue
 
                 if isinstance(record_field, list):  # type: List[Phone] | List[Email]
-                    for data in record_field:
-                        if search in data.value:
-                            information.append(data.value)
+                    data_in_field = [data for data in record_field if search in data.value]
+                    if data_in_field and None not in data_in_field:
+                        information.append([field, *data_in_field])
 
                 elif isinstance(record_field, Birthday):  # type: Birthday
                     if search in record_field.value.strftime('%d-%m-%Y'):
-                        information.append(record_field.value)
+                        information.append([field, record_field])
 
                 elif isinstance(record_field, Name):
                     if search in record_field.value:  # type: Name
-                        information.append(record_field.value)
+                        information = [record_field.value]
 
             if information:
                 matched_information[record.name.value] = information.copy()
@@ -379,6 +377,7 @@ class AddressBook(UserDict):
 
             if record.birthday:
                 birthday = record.birthday.value.replace(year=current_date.year)
+                print(birthday + timedelta(days))
                 if current_date <= birthday <= current_date + timedelta(days):
                     birthdays.append(
                         f"{record.name.value} has birthday {record.birthday.value.strftime('%d %B')}"
@@ -421,46 +420,32 @@ class AddressBook(UserDict):
 
             if on_page == self.__records_per_page:
 
-                page_info.append([f"{current_page} page of {total_pages} pages"])
+                page_info.append([f"{current_page} page of {total_pages} pages\n"])
                 yield page_info
                 page_info.clear()
                 current_page += 1
                 on_page = 0
 
         else:
-            page_info.append([f"{current_page} page of {total_pages} pages"])
-            yield page_info
+            if current_page == total_pages:
+                page_info.append([f"{current_page} page of {total_pages} pages\n"])
+                yield page_info
 
+    def show_record_data(self, contact: str) -> list:
 
-class Notes:
-    pass
+        record: Record = self.data[contact]
+        data = []
+        for field in self.__fields:
+            record_field = getattr(record, field)
 
+            if record_field is None:
+                data.append([f"{field}:", 'No data'])  # type: None
 
-if __name__ == '__main__':
+            elif isinstance(record_field, list):
+                data.append([f"{field}:", *record_field])  # type: List[Phone] | List[Email]
 
-    record1 = Record(name=Name('name'), birthday=Birthday('12-03-1997'))
-    record2 = Record(name=Name('one more name'), phones=[Phone('0123456789')])
-    record3 = Record(name=Name('one name'), emails=[Email('rafael4uk@ukr.net')])
+            else:
+                data.append([f"{field}:", record_field])  # type: Birthday | Name
 
-    AB = AddressBook('userbook')
-
-    for page in AB.show_contacts(2):
-        for elem in page:
-            print(elem[0], end=' ')
-            print(*elem[1:], sep=', ')
-
-    AB = AddressBook('try')
-    AB.add_contact(record1)
-    AB.add_contact(record2)
-    AB.add_contact(record3)
-    for page in AB.show_contacts(1):
-        for elem in page:
-            print(elem[0], end=' ')
-            print(*elem[1:], sep=', ')
-
-    AB = AddressBook('userbook')
-    for page in AB.show_contacts(2):
-        for elem in page:
-            print(elem[0], end=' ')
-            print(*elem[1:], sep=', ')
+        return data
 
