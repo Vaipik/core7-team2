@@ -57,9 +57,8 @@ def edit_phone(*args):
 @error_handler
 def edit_note(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note you want to edit: ")
-    nt_data = NBCmd.get_note(name, NB)
-    if name not in nt_data:
-        print(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+    if name not in NB.data:
+        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
     else:
         print(f"Old  text note: {NBCmd.get_note(name, NB)}")
         new_note = input("Edit text note: ")
@@ -69,9 +68,8 @@ def edit_note(*args):                                        # area of responsib
 @error_handler
 def edit_tag(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note where you want to edit tags: ")
-    nb_data = NBCmd.get_tags(name, NB)
-    if name not in nb_data:
-        print(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+    if name not in NB.data:
+        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
     else:
         print(f"Old  tags: {', '.join(NBCmd.get_tags(name, NB))}")
         new_tags = input("Edit tags: ")
