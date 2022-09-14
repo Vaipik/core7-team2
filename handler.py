@@ -36,7 +36,7 @@ def add_note(*args):                                        # area of responsibi
     name = input("Enter note name: ")
     tags = input("Enter tags for note: ")
     text = input("Enter note text: ")
-    print(NBCmd.add_note(name, tags, text, NBCmd))
+    print(NBCmd.add_note(name, tags, text, NB))
 
 
 @error_handler
@@ -58,7 +58,7 @@ def edit_phone(*args):
 def edit_note(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note you want to edit: ")
     if name not in NB.data:
-        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+        raise KeyError(f'Note with name {name} does not find')
     else:
         print(f"Old  text note: {NBCmd.get_note(name, NB)}")
         new_note = input("Edit text note: ")
@@ -69,7 +69,7 @@ def edit_note(*args):                                        # area of responsib
 def edit_tag(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note where you want to edit tags: ")
     if name not in NB.data:
-        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+        raise KeyError(f'Note with name {name} does not find')
     else:
         print(f"Old  tags: {', '.join(NBCmd.get_tags(name, NB))}")
         new_tags = input("Edit tags: ")
@@ -220,10 +220,14 @@ OPERATIONS = {
     'show help': show_help,
     'show contacts': show_contacts,
     'show notes': show_notes,  # Vova
+<<<<<<< Updated upstream
     'show note': show_note,    # Vova
     'new contact': new_contact,
     'change phonebook': change_phonebook,
     'change notebook': change_notebook,
+=======
+    'show note': show_note,  # Vova
+>>>>>>> Stashed changes
     'sort folder': sort_folder,
 }
 
