@@ -61,7 +61,7 @@ def edit_note(*args):                                        # area of responsib
     if name not in nt_data:
         print(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
     else:
-        print(f"Old  text note: {NBCmd.get_note(name, NB}")
+        print(f"Old  text note: {NBCmd.get_note(name, NB)}")
         new_note = input("Edit text note: ")
         print(NBCmd.edit_note(name, new_note, NB))
 
