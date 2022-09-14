@@ -69,7 +69,10 @@ def add_phone(*args):
 
 @error_handler
 def add_note(*args):
-    print('adding note func')
+    name = input("Enter note name: ")
+    tags = input("Enter tags for note: ")
+    text = input("Enter note text: ")
+    print(NBCmd.add_note(name, tags, text, NBCmd))
 
 
 @error_handler
@@ -149,7 +152,24 @@ def edit_phone(*args):
 
 @error_handler
 def edit_note(*args):
-    print('changing note func')
+    name = input("Enter the name of the note you want to edit: ")
+    if name not in NB.data:
+        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+    else:
+        print(f"Old  text note: {NBCmd.get_note(name, NB)}")
+        new_note = input("Edit text note: ")
+        print(NBCmd.edit_note(name, new_note, NB))
+   
+
+@error_handler
+def edit_tag(*args):                                        # area of responsibility Volodymyr
+    name = input("Enter the name of the note where you want to edit tags: ")
+    if name not in NB.data:
+        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+    else:
+        print(f"Old  tags: {', '.join(NBCmd.get_tags(name, NB))}")
+        new_tags = input("Edit tags: ")
+        print(NBCmd.edit_tags(name, new_tags, NB))        
 
 
 @error_handler
@@ -215,8 +235,12 @@ def delete_phone(*args):
     print(result)
 
 
+@error_handler
 def delete_note(*args):
-    print('deleting note func')
+    name = input("Enter the name of the note you want to delete: ")
+    confirm = input("Do you really want to delete y/n: ")
+    if confirm.lower() == "y":
+        print(NBCmd.delete_note(name, NB))
 
 
 @error_handler
@@ -256,7 +280,8 @@ def change_notebook(*args):
 
 @error_handler
 def find_note(*args):
-    pass
+    request = input("Enter a query to search: ")
+    print(NBCmd.find_note(request, NB))
 
 
 @error_handler
@@ -278,7 +303,9 @@ def find_phonebook(*args) -> None:
 
 @error_handler
 def find_tag(*args):
-    pass
+    print(NBCmd.find_tag("available", NB))
+    tag = input("Enter a tag: ")
+    print(NBCmd.find_tag(tag, NB)) 
 
 
 @error_handler
@@ -317,8 +344,14 @@ def show_help(*args):
 
 
 @error_handler
+def show_note(*args):                                         # area of responsibility Volodymyr
+    name = input("Enter the name of the note you want to view: ")
+    print(NBCmd.show_some_note(name, NB))
+
+    
+@error_handler
 def show_notes(*args):
-    pass
+    print(NBCmd.show_all_notes(NB))
 
 
 @error_handler
@@ -335,7 +368,7 @@ def sort_folder(*args) -> None:
 
 @error_handler
 def sort_tag(*args):
-    pass
+    print(NBCmd.sort_tag(NB))
 
 
 def suitable_command(input_command: str) -> str:
