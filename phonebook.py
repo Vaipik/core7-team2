@@ -372,23 +372,17 @@ class AddressBook(UserDict):
         """
         current_date = datetime.now().date()
         birthdays = []
+        time_gap: date = current_date + timedelta(days)
         for record in self.data.values():  # type: Record
 
             if record.birthday:
                 birthday = record.birthday.value.replace(year=current_date.year)
-                time_gap: date = current_date + timedelta(days)
 
                 if current_date <= birthday <= time_gap:
 
                     birthdays.append(
                         f"{record.name.value} has birthday {record.birthday.value.strftime('%d %B')}"
                         f" in {(birthday - current_date).days} days"
-                    )
-
-                else:
-                    birthdays.append(
-                        f"{record.name.value} has birthday {record.birthday.value.strftime('%d %B')}"
-                        f" in {abs((birthday.replace(year=time_gap.year) - current_date).days)} days"
                     )
 
         return birthdays

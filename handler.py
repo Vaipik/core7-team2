@@ -272,11 +272,6 @@ def change_phonebook(*args):
 
 
 @error_handler
-def change_notebook(*args):
-    print('changing notebook func')
-
-
-@error_handler
 def find_note(*args):
     request = input("Enter a query to search: ")
     print(NBCmd.find_note(request, NB))
@@ -336,9 +331,39 @@ def show_contacts(*args) -> None:
             print(*data)
 
 
-@error_handler
 def show_help(*args):
-    pass
+    print("I can operate your phonebook(s) and(or) your notebooks. Also i can sort you folder.\nPhonebook actions:")
+    print("> add <birthday, email, phone> <username> <data> to add new data to existing contact.")
+    print("> birthdays in <days> to find users who has birthday in given gap. Days is not obligatory")
+    print("> change <phonebook, notebook> to change current phonebook or notebook")
+    print("> delete <<birthday, email, phone> <username> <data> to delete desired data.\n"
+          "  In case of birthday it is not necessary to enter data")
+    print("> edit <birthday, email, phone> <username> <old_data> <new_data> to change desired data")
+    print("> find phonebook <any data> to search in your contacts")
+    print("> new contact <username> <any data>. Data must be separated by spaces.\n"
+          "  Data is not necesssary and can be phone(s), email(s) and birthday.")
+    print("> show contact <username> to show contact data")
+    print("> show contacts <records per page> to show your phonebook on pages.\n"
+          "  records per page is not necessary parameter")
+    print("Notebook actions:")
+    print("> add note to start adding note.\n"
+          "  After entering the command, it will first ask for the name of the note\n "
+          "  then the tags, then the text of the note itself")
+    print("> edit note to start editing note")
+    print("> edit tag to start editing tag")
+    print("> find note to start search in your notebook")
+    print("> find tag to start search in your notebook tags")
+    print("> show note to exact note.\n"
+          "  after entering the command, it will first ask for the\n"
+          "  name of the note, then display the text of the note")
+    print("> show notes to show all notes")
+    print("> sort tag to see alphabetically sorted tags")
+    print("What can i do else ?")
+    print("> sort folder <OS path> to sort desired folder.\n"
+          "  This will sort you files in folder according to following categories:\n"
+          "  archives, audio, documents, images, videos, unknown\n"
+          "  PLEASE ENTER ONLY ABSOLUTE PATH TO FOLDER")
+    print("> show help to see again what can i do :)")
 
 
 @error_handler
@@ -405,16 +430,15 @@ OPERATIONS = {
     'add note': add_note,  # Vova
     'birthdays in': birthdays_in,
     'change phonebook': change_phonebook,
-    'change notebook': change_notebook,
+    'delete birthday': delete_birthday,
+    'delete email': delete_email,
+    'delete phone': delete_phone,
+    'delete note': delete_note,  # Vova
     'edit birthday': edit_birthday,
     'edit email': edit_email,
     'edit phone': edit_phone,
     'edit note': edit_note,  # Vova
     'edit tag': edit_tag,
-    'delete birthday': delete_birthday,
-    'delete email': delete_email,
-    'delete phone': delete_phone,
-    'delete note': delete_note,  # Vova
     'find tag': find_tag,  # Vova
     'find note': find_note,  # Vova
     'find phonebook': find_phonebook,
@@ -428,7 +452,7 @@ OPERATIONS = {
     'sort tag': sort_tag,  # Vova
 }
 
-AB = AddressBook('tests')
+AB = AddressBook('phonebook')
 NB = NotesBook()  # Vova
 NBCmd = NotesCommands()  # Vova
 
