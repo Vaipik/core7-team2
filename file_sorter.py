@@ -88,7 +88,7 @@ def parse_folder(path: Path, base_path: Path = None) -> None:
 
             if elem.is_file():
 
-                file_name = normalize(elem.stem) + elem.suffix  # Cyrillic -> latin
+                file_name = normalize(elem.stem)  # Cyrillic -> latin
                 folder_name = FILES_EXTENSIONS.get(
                     get_extensions(elem.suffix[1:]), 'unknown')
                 folder_to = base_path.joinpath(folder_name)
@@ -97,6 +97,7 @@ def parse_folder(path: Path, base_path: Path = None) -> None:
                     shutil.unpack_archive(elem, folder_to.joinpath(file_name))
                     elem.unlink()
                 else:
+                    file_name += elem.suffix
                     elem.replace(folder_to.joinpath(file_name))
 
             else:
