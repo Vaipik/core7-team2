@@ -154,7 +154,7 @@ def edit_phone(*args):
 def edit_note(*args):
     name = input("Enter the name of the note you want to edit: ")
     if name not in NB.data:
-        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+        raise KeyError(f'Note with name {name} does not find')
     else:
         print(f"Old  text note: {NBCmd.get_note(name, NB)}")
         new_note = input("Edit text note: ")
@@ -165,7 +165,7 @@ def edit_note(*args):
 def edit_tag(*args):                                        # area of responsibility Volodymyr
     name = input("Enter the name of the note where you want to edit tags: ")
     if name not in NB.data:
-        raise KeyError(f'\033[33mNote with name \033[43m {name} \033[0m\033[33m does not find\033[0m')
+        raise KeyError(f'Note with name {name} does not find')
     else:
         print(f"Old  tags: {', '.join(NBCmd.get_tags(name, NB))}")
         new_tags = input("Edit tags: ")
@@ -410,6 +410,7 @@ OPERATIONS = {
     'edit email': edit_email,
     'edit phone': edit_phone,
     'edit note': edit_note,  # Vova
+    'edit tag': edit_tag,
     'delete birthday': delete_birthday,
     'delete email': delete_email,
     'delete phone': delete_phone,
