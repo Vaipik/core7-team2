@@ -154,8 +154,8 @@ class Record:
         if self.birthday is not None:
             self.birthday = new_birthday
             return "Birthday changed"
-        else:
-            return "Birthday does not exist"
+ 
+        return "Birthday does not exist"
 
     def change_email(self, old_email: str, new_email: Email) -> str:
         """
@@ -170,8 +170,8 @@ class Record:
                 self.emails.remove(email)
                 self.emails.append(new_email)
                 return "Email changed"
-        else:
-            return f"{old_email} does not exist"
+ 
+        return f"{old_email} does not exist"
 
     def change_phone(self, old_phone: str, new_phone: Phone) -> str:
         """
@@ -186,8 +186,8 @@ class Record:
                 self.phones.remove(phone)
                 self.phones.append(new_phone)
                 return "Phone number changed"
-            else:
-                return f"{old_phone} does not exist"
+ 
+        return f"{old_phone} does not exist"
 
     def delete_birthday(self, birthday_to_delete: Birthday) -> str:
         """
@@ -199,8 +199,8 @@ class Record:
         if self.birthday:
             self.birthday = None
             return "Birthday deleted"
-        else:
-            return "Birthday does not exist"
+
+        return "Birthday does not exist"
 
     def delete_email(self, email_to_delete: str) -> str:
         """
@@ -213,8 +213,8 @@ class Record:
             if email.value == email_to_delete:
                 self.emails.remove(email)
                 return "Email deleted"
-        else:
-            return f"{email_to_delete} does not exist"
+
+        return f"{email_to_delete} does not exist"
 
     def delete_phone(self, phone_to_delete: str) -> str:
         """
@@ -227,8 +227,8 @@ class Record:
             if phone.value == phone_to_delete:
                 self.phones.remove(phone)
                 return "Phone number deleted"
-            else:
-                return f"{phone_to_delete} does not exist"
+
+        return f"{phone_to_delete} does not exist"
 
 
 class AddressBook(UserDict):
