@@ -72,7 +72,7 @@ def add_note(*args):
     name = input("Enter note name: ")
     tags = input("Enter tags for note: ")
     text = input("Enter note text: ")
-    print(NBCmd.add_note(name, tags, text, NBCmd))
+    print(NBCmd.add_note(name, tags, text, NB))
 
 
 @error_handler
