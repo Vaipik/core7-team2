@@ -423,6 +423,7 @@ OPERATIONS = {
     'show contact': show_contact,
     'show contacts': show_contacts,
     'show help': show_help,
+    'show note': show_note,
     'show notes': show_notes,  # Vova
     'sort folder': sort_folder,
     'sort tag': sort_tag,  # Vova
