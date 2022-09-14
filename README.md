@@ -50,4 +50,4 @@ Empty folders will be deleted. \
 Only latin symbols and "_" sign are allowed, otherwise files and in case of archives folders will be renamed\n"""
 * show help - show information for all commands
 
-### Data will be saved after program compl#### Although in etion 
+### Data will be saved after program completion
