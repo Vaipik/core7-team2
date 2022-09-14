@@ -176,7 +176,7 @@ def edit_tag(*args):                                        # area of responsibi
 def delete_birthday(*args):
     """
     Is used to delete contacts birthsay
-    :param args: Username birthday
+    :param args: None
     :return: None
     """
     name, birthday, *tail = args
@@ -185,9 +185,7 @@ def delete_birthday(*args):
     if record is None:
         raise KeyError(f"{name} contact does not exist")
 
-    result = record.delete_birthday(
-        Birthday(birthday)
-    )
+    result = record.delete_birthday()
     if 'deleted' in result:
         AB.changed_contact_data(record)
     print(result)
