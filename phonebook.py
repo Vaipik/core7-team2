@@ -189,7 +189,7 @@ class Record:
  
         return f"{old_phone} does not exist"
 
-    def delete_birthday(self, birthday_to_delete: Birthday) -> str:
+    def delete_birthday(self) -> str:
         """
         Deleting birthday
 
