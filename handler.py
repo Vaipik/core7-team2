@@ -1,4 +1,3 @@
-import errors
 from error_handler import error_handler
 from file_sorter import sorter
 from phonebook import Name, Birthday, Email, Phone, Record, AddressBook
@@ -8,27 +7,64 @@ from notes import NotesBook, NotesCommands
 @error_handler
 def add_birthday(*args) -> None:  # Username birthday
     """
-    Is used to change contact birthday
+    Is used to add contact birthday
     :param args: Username birthday
     :return: None
     """
     name, birthday, *tail = args
-    record: Record = AB[name]
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
     result = record.add_birthday(
         Birthday(birthday)
     )
     if 'exists' not in result:
         AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
 def add_email(*args):
-    print('adding email func')
+    """
+    Is used to change contact phone
+    :param args: Username phone
+    :return: None
+    """
+    name, email, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.add_email(
+        Email(email)
+    )
+    if 'exists' not in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
 def add_phone(*args):
-    print('adding phone func')
+    """
+    Is used to change contact phone
+    :param args: Username phone
+    :return: None
+    """
+    name, phone, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.add_phone(
+        Phone(phone)
+    )
+    if 'exists' not in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
@@ -45,22 +81,70 @@ def birthdays_in(*args) -> None:
     """
     days = int(args[0]) if args else None
     birthdays = AB.show_near_birthdays(days) if days else AB.show_near_birthdays()
-    print(*birthdays)
+    print(*birthdays, sep='\n')
 
 
 @error_handler
-def edit_birthday(*args):
-    print('changing birthday func')
+def edit_birthday(*args) -> None:
+    """
+    Changing birthday
+    :param args: username new birthday date
+    :return: None
+    """
+    name, new_birthday, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.change_birthday(
+        Birthday(new_birthday)
+    )
+    if 'changed' in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
-def edit_email(*args):
-    print('changing email func')
+def edit_email(*args) -> None:
+    """
+    Is used to change contacts email
+    :param args: Username old_email, new_email
+    :return: None
+    """
+    name, old_email, new_email, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.change_email(
+        old_email, Email(new_email)
+    )
+    if 'changed' in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
 def edit_phone(*args):
-    print('changing phone func')
+    """
+    Is used to change contacts phone
+    :param args: Username old_phone new_phone
+    :return: None
+    """
+    name, old_phone, new_phone, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.change_phone(
+        old_phone, Phone(new_phone)
+    )
+    if 'changed' in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
@@ -70,20 +154,67 @@ def edit_note(*args):
 
 @error_handler
 def delete_birthday(*args):
-    print('deleting birthday func')
+    """
+    Is used to delete contacts birthsay
+    :param args: Username birthday
+    :return: None
+    """
+    name, birthday, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.delete_birthday(
+        Birthday(birthday)
+    )
+    if 'deleted' in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
 def delete_email(*args):
-    print('deleting email func')
+    """
+    Is used to delete contacts email
+    :param args: Username email
+    :return: None
+    """
+    name, email, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.delete_email(
+        email
+    )
+    if 'deleted' in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
 @error_handler
 def delete_phone(*args):
-    print('deleting phone func')
+    """
+        Is used to delete contacts phone
+        :param args: Username phone
+        :return: None
+        """
+    name, phone, *tail = args
+
+    record: Record = AB.get(name)
+    if record is None:
+        raise KeyError(f"{name} contact does not exist")
+
+    result = record.delete_phone(
+        phone
+    )
+    if 'deleted' in result:
+        AB.changed_contact_data(record)
+    print(result)
 
 
-@error_handler
 def delete_note(*args):
     print('deleting note func')
 
@@ -138,7 +269,6 @@ def find_phonebook(*args) -> None:
 
             if len(fields) == 1 and username == fields[0]:  # username is a key
                 print(f"Looks like you are looking for {username} contact")
-                # print(AB.show_contact(username))
             else:
                 print(f"Looks like you are looking for {username} data:")
                 for field in fields:
@@ -194,7 +324,7 @@ def show_notes(*args):
 @error_handler
 def sort_folder(*args) -> None:
     """
-
+    /home/nkhylko/IT/GoIT/module-6/trash UNIX
     :param args:
     :return:
     """
@@ -208,16 +338,18 @@ def sort_tag(*args):
     pass
 
 
-@error_handler
+def suitable_command(input_command: str) -> str:
+
+    for command in OPERATIONS. keys():
+        if input_command in command:
+            return command
+    return suitable_command(input_command[:-1])
+
+
 def wrong_command(*args):
 
     input_command = f"{args[0]} {args[1]}"
-    print(input_command)
-    for d in OPERATIONS.keys():
-        if input_command in d:
-            print(d)
-            return d
-    return wrong_command(input_command[:-1])
+    print(f"Maybe you mean {suitable_command(input_command)}")
 
 
 def input_parser(user_input: str) -> list:
@@ -240,6 +372,9 @@ OPERATIONS = {
     'add email': add_email,
     'add phone': add_phone,
     'add note': add_note,  # Vova
+    'birthdays in': birthdays_in,
+    'change phonebook': change_phonebook,
+    'change notebook': change_notebook,
     'edit birthday': edit_birthday,
     'edit email': edit_email,
     'edit phone': edit_phone,
@@ -251,39 +386,34 @@ OPERATIONS = {
     'find tag': find_tag,  # Vova
     'find note': find_note,  # Vova
     'find phonebook': find_phonebook,
-    'sort tag': sort_tag,  # Vova
-    'show help': show_help,
-    'birthdays in': birthdays_in,
+    'new contact': new_contact,
     'show contact': show_contact,
     'show contacts': show_contacts,
+    'show help': show_help,
     'show notes': show_notes,  # Vova
-    'new contact': new_contact,
-    'change phonebook': change_phonebook,
-    'change notebook': change_notebook,
     'sort folder': sort_folder,
+    'sort tag': sort_tag,  # Vova
 }
-
 
 AB = AddressBook('tests')
 NB = NotesBook()  # Vova
 NBCmd = NotesCommands()  # Vova
-print(">>> Hello! I am your CLI helper. Please enter show help to see what can i do!")
 
-while True:
 
-    command, data_type, *query = input_parser(input())
-    print(command, data_type)
-    if command == 'break':
-        break
-    action = OPERATIONS.get(command + ' ' + data_type, wrong_command)
-    if action.__name__ == 'wrong_command':
-        action(command, data_type)
-    else:
-        if not query:
-            query = []
-        print(action(*query))
+def handler():
 
-# def handler
+    while True:
+        command, data_type, *query = input_parser(input())
+        if command == 'break':
+            break
 
-    # if __name__ == '__main__':
-    #     # handler()
+        action = OPERATIONS.get(command + ' ' + data_type, wrong_command)
+        if action.__name__ == 'wrong_command':
+            action(command, data_type)
+
+        else:
+
+            if not query:
+                query = []
+
+            action(*query)

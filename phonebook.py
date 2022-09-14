@@ -1,5 +1,5 @@
 from collections import UserDict
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import re
 from pathlib import Path
 import pickle
@@ -153,7 +153,7 @@ class Record:
         """
         if self.birthday is not None:
             self.birthday = new_birthday
-            return "Birthday canged"
+            return "Birthday changed"
         else:
             return "Birthday does not exist"
 
@@ -372,16 +372,23 @@ class AddressBook(UserDict):
         """
         current_date = datetime.now().date()
         birthdays = []
-
         for record in self.data.values():  # type: Record
 
             if record.birthday:
                 birthday = record.birthday.value.replace(year=current_date.year)
-                print(birthday + timedelta(days))
-                if current_date <= birthday <= current_date + timedelta(days):
+                time_gap: date = current_date + timedelta(days)
+
+                if current_date <= birthday <= time_gap:
+
                     birthdays.append(
                         f"{record.name.value} has birthday {record.birthday.value.strftime('%d %B')}"
                         f" in {(birthday - current_date).days} days"
+                    )
+
+                else:
+                    birthdays.append(
+                        f"{record.name.value} has birthday {record.birthday.value.strftime('%d %B')}"
+                        f" in {abs((birthday.replace(year=time_gap.year) - current_date).days)} days"
                     )
 
         return birthdays

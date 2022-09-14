@@ -9,22 +9,24 @@ def error_handler(function):
     def wrapper(*args, **kwargs):
 
         try:
-            return function(*args, ** kwargs)
+            function(*args, ** kwargs)
         except KeyError as e:
-            return str(e)
+            print(e)
         except ValueError as e:
-            return str(e)
-        except IndexError:
-            return 'Looks like you forgot to enter some data'
+            print('Looks like you forgot to enter some data')
+        except IndexError as e:
+            print(e)
         except EmptySearchString as e:
-            return str(e)
+            print(e)
         except ContactExists as e:
-            return str(e)
+            print(e)
         except WrongBirthday as e:
-            return str(e)
+            print(e)
         except WrongEmail as e:
-            return str(e)
+            print(e)
         except WrongPhone as e:
-            return str(e)
+            print(e)
+        except Exception:
+            print('Something bad has happened. Try anothing else :(')
 
     return wrapper

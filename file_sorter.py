@@ -123,6 +123,7 @@ def sorter(user_input: list[str]) -> str:
         user_path = ''.join(user_input)
 
     path = Path(user_path)
+
     if path.exists():
         if not path.is_file():
             create_folders(path)
