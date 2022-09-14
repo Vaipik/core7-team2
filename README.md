@@ -7,7 +7,8 @@ desired command
 ### Please mention that to correct operation you need to use spaces as separator between entered data.
 <br>
 
-<h3> pip install -i https://test.pypi.org/simple/ CLI-helper </h3>
+<h3>To install package <p>pip install -i https://test.pypi.org/simple/ CLI-helper</p> </h3>
+
 #### Phonebook commands:
 * new contact <**name**> <**phone(s)**> <**email(s)**> <**birthday**> - command for adding new contact in phonebook.
 Contact name is the only _*obligatory*_ data, phone(s), email(s) and birhday can be added afterwars if needed.
