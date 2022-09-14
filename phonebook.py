@@ -167,7 +167,7 @@ class Record:
         """
         for email in self.emails:
             if email.value == old_email:
-                self.emails.remove(email.value)
+                self.emails.remove(email)
                 self.emails.append(new_email)
                 return "Email changed"
         else:
@@ -183,7 +183,7 @@ class Record:
         """
         for phone in self.phones:
             if phone.value == old_phone:
-                self.phones.remove(phone.value)
+                self.phones.remove(phone)
                 self.phones.append(new_phone)
                 return "Phone number changed"
             else:
@@ -196,7 +196,7 @@ class Record:
         :param birthday_to_delete: birthday to be deleted
         :return: string with result
         """
-        if self.birthday == birthday_to_delete:
+        if self.birthday:
             self.birthday = None
             return "Birthday deleted"
         else:
@@ -211,7 +211,7 @@ class Record:
         """
         for email in self.emails:
             if email.value == email_to_delete:
-                self.emails.remove(email.value)
+                self.emails.remove(email)
                 return "Email deleted"
         else:
             return f"{email_to_delete} does not exist"
@@ -225,7 +225,7 @@ class Record:
         """
         for phone in self.phones:
             if phone.value == phone_to_delete:
-                self.phones.remove(phone.value)
+                self.phones.remove(phone)
                 return "Phone number deleted"
             else:
                 return f"{phone_to_delete} does not exist"
