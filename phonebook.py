@@ -44,7 +44,7 @@ class Email(Field):
 
     @Field.value.setter
     def value(self, value: str) -> None:
-        __pattern = r"^[a-zA-Z][\w.]{1,}@([a-zA-Z]{2,}[.][a-zA-Z]{2,}|[a-zA-Z]{2,}[.][a-zA-Z]{2,}[.][a-zA-Z]{2,})$"
+        __pattern = r"^[a-zA-Z][\w.]+@([a-zA-Z]{2,}[.][a-zA-Z]{2,}|[a-zA-Z]{2,}[.][a-zA-Z]{2,}[.][a-zA-Z]{2,})$"
         if re.match(__pattern, value):
             self._value = value
 
@@ -89,7 +89,7 @@ class Phone(Field):
         return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
 
     def __str__(self) -> str:
-        return f"+38({self.value[:3]}){self.value[3:6]}{self.value[6:8]}{self.value[8:]}"  # +38(012)34-567-89
+        return f"+38({self.value[:3]}){self.value[3:6]}-{self.value[6:8]}-{self.value[8:]}"  # +38(012)34-567-89
 
 
 class Record:
@@ -154,7 +154,7 @@ class Record:
         if self.birthday is not None:
             self.birthday = new_birthday
             return "Birthday changed"
- 
+
         return "Birthday does not exist"
 
     def change_email(self, old_email: str, new_email: Email) -> str:
@@ -170,7 +170,7 @@ class Record:
                 self.emails.remove(email)
                 self.emails.append(new_email)
                 return "Email changed"
- 
+
         return f"{old_email} does not exist"
 
     def change_phone(self, old_phone: str, new_phone: Phone) -> str:
@@ -186,14 +186,14 @@ class Record:
                 self.phones.remove(phone)
                 self.phones.append(new_phone)
                 return "Phone number changed"
- 
+
         return f"{old_phone} does not exist"
 
     def delete_birthday(self) -> str:
         """
         Deleting birthday
 
-        :param birthday_to_delete: birthday to be deleted
+        :param: None
         :return: string with result
         """
         if self.birthday:
@@ -236,9 +236,9 @@ class AddressBook(UserDict):
     __fields = ('name', 'phones', 'emails', 'birthday')
     __records_per_page = 2
 
-    def __init__(self, book_name: str = 'AddressBook'):
+    def __init__(self):
         super().__init__(self)
-        self.__book_name = book_name
+        self.__book_name = 'phonebook'
         self.__path = self.__path_file()
         self.data = self.__restore()
 
@@ -263,7 +263,7 @@ class AddressBook(UserDict):
                 try:
                     book = pickle.load(file)
                     if not isinstance(book, AddressBook):  # If data not AddressBook object
-                        print(f'Wrong data in {self.__path}\nBook has not been restored')
+                        print(f'Wrong data in {self.__book_name}\nBook has not been restored')
                         return {}
                 except EOFError:  # If file is empty
                     return {}
@@ -280,7 +280,7 @@ class AddressBook(UserDict):
         with open(self.__path, 'wb') as file:
             pickle.dump(self, file)
 
-        print(f"Contact has been saved to {self.__path}")
+        print(f"Phonebook has been saved to {self.__book_name}")
 
     def add_contact(self, record: Record) -> None:
         """
@@ -297,7 +297,23 @@ class AddressBook(UserDict):
         self.data[contact] = record
         self.__save()
 
-    # @decorator -> KeyError
+    def changed_contact_data(self, record: Record) -> str:
+        """
+        Is used change contact data
+        :param record: record to be changed
+        :return:
+        """
+        self.data[record.name.value] = record
+        self.__save()
+
+        return f"Data has been changed"
+
+    def change_book(self, book_name: str):
+
+        self.__book_name = book_name
+        self.__path = self.__path_file()
+        self.data = self.__restore()
+
     def delete_contact(self, contact: str) -> str:
         """
         Delete contact from phonebook
@@ -313,17 +329,6 @@ class AddressBook(UserDict):
         self.__save()
 
         return f"{contact} has been deleted"
-
-    def changed_contact_data(self, record: Record) -> str:
-        """
-        Is used change contact data
-        :param record: record to be changed
-        :return:
-        """
-        self.data[record.name.value] = record
-        self.__save()
-
-        return f"Data has been changed"
 
     def find_record(self, search: str) -> str | dict[list]:
         """
@@ -395,6 +400,8 @@ class AddressBook(UserDict):
         :param records_per_page: number of fields shown on one page
         :Generator: yield fields per one page
         """
+        if not self.data:
+            raise KeyError('No contacts in your phonebook')
         if records_per_page:
             self.__records_per_page = records_per_page
 
@@ -435,7 +442,9 @@ class AddressBook(UserDict):
 
     def show_record_data(self, contact: str) -> list:
 
-        record: Record = self.data[contact]
+        record: Record = self.data.get(contact)
+        if record is None:
+            raise KeyError(f"No {contact} in your {self.__book_name} phonebook")
         data = []
         for field in self.__fields:
             record_field = getattr(record, field)

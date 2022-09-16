@@ -6,29 +6,67 @@ import pickle
 
 class NotesBook(UserDict):
 
-    BASE_DIR = Path(__file__).parent
-    DATA_DIR = BASE_DIR.joinpath('data')
     def __init__(self):
+        super().__init__(self)
 
-        self.filename = NotesBook.DATA_DIR.joinpath('notesbook.note')
-        self.data = {}
+        self.__book_name = 'notebook'
+        self.__path = self.__path_file()
+        self.data = self.__restore()
+
+    def __path_file(self) -> Path:
+        """
+        Path where self data is stored
+
+        :return: Path
+        """
+        BASE_DIR = Path(__file__).parent
+        path = BASE_DIR.joinpath('data')
+        path.mkdir(exist_ok=True)
+        path = path.joinpath(f'{self.__book_name}.note')
+        return path
+
+    def __restore(self):
+        """
+        Is used to restore saved book if it exists
+
+        :return: saved or empty book
+        """
+        if self.__path.exists() and self.__path.is_file():
+            with open(self.__path, 'rb') as file:
+                try:
+                    book = pickle.load(file)
+                    if not isinstance(book, NotesBook):  # If data not AddressBook object
+                        print(f'Wrong data in {self.__book_name}\nBook has not been restored')
+                        return {}
+                except EOFError:  # If file is empty
+                    return {}
+            print(f'{self.__book_name} data has been restored')
+            return book.data
+        else:  # If file does not exist
+            return {}
+
+    def change_book(self, book_name: str) -> None:
+
+        self.__book_name = book_name
+        self.__path = self.__path_file()
+        self.data = self.__restore()
 
     def read_file(self) -> None:
         try:
-            with open(self.filename, 'rb') as fh:
+            with open(self.__path, 'rb') as fh:
                 unpacked = pickle.load(fh)
                 self.data = unpacked
         except FileNotFoundError:
             self.data = {}
 
     def save_in_file(self) -> None:
-        with open(self.filename, 'wb') as fh:
-            pickle.dump(self.data, fh)
+        with open(self.__path, 'wb') as fh:
+            pickle.dump(self, fh)
 
 
-class NotesCommands():
+class NotesCommands:
 
-    def add_note(self, name: str, tags: str, note: str, notesbook: NotesBook) -> None:
+    def add_note(self, name: str, tags: str, note: str, notesbook: NotesBook) -> str:
         """the function of adding a new note"""
         notesbook.read_file()
         create = datetime.now()
@@ -43,7 +81,7 @@ class NotesCommands():
         else:
             return (f'\033[33mNote with name \033[43m {name} \033[0m\033[33m exists, if you want to change it enter the command: edit note\033[0m')
 
-    def delete_note(self, name: str, notesbook: NotesBook) -> None:
+    def delete_note(self, name: str, notesbook: NotesBook) -> str:
         """function to delete a note"""
         notesbook.read_file()
         if name not in notesbook.data:
@@ -53,7 +91,7 @@ class NotesCommands():
             notesbook.save_in_file()
             return (f'Note with name \033[47m\033[30m {name} \033[0m deleted.')
 
-    def edit_note(self, name: str, note: str, notesbook: NotesBook) -> None:
+    def edit_note(self, name: str, note: str, notesbook: NotesBook) -> str:
         """note editing function"""
         notesbook.read_file()
         if name not in notesbook.data:
@@ -68,7 +106,7 @@ class NotesCommands():
         notesbook.read_file()
         return notesbook.data[name]["note"]
 
-    def edit_tags(self, name: str, tags: str, notesbook: NotesBook) -> None:
+    def edit_tags(self, name: str, tags: str, notesbook: NotesBook) -> str:
         """function of editing tags in a note"""
         notesbook.read_file()
         if name not in notesbook.data:
@@ -133,7 +171,7 @@ class NotesCommands():
         else:
             result = f"\033[32m\n*** Find next notes with tag \033[42m {tag} \033[0m\033[32m ***\n\033[0m" + find
             return result
-    
+
     def sort_tag(self, notesbook: NotesBook) -> str:
         """function to display all notes sorted by tags alphabetically"""
         notesbook.read_file()
